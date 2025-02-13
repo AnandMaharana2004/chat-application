@@ -1,5 +1,5 @@
-import {Router} from 'express'
-import { analyseCode } from '../controllers/aiController'
+import { Router } from 'express'
+import { analyseCode } from '../controllers/aiController.js'
 
 const router = Router()
 
