@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setProfile, setSelectedUsers } from "../redux/userSlices";
+import { setSelectedUsers } from "../redux/userSlices";
 import { addToFriend } from "../api/userApi";
 import toast from "react-hot-toast";
 import ProfilePic from "./ProfilePic";
 
-function UserBox({ user, fromExplore = false }) {
+function UserBox({ user, fromExplore = false, fromAi = false }) {
   const dispatch = useDispatch();
-  const { selectedUser, onlineUsers, authUser, userFriendList } = useSelector(
+  const { selectedUser, authUser, userFriendList } = useSelector(
     (store) => store.user
   );
 
-  const isOnline = onlineUsers?.includes(user?._id);
-  const isFriend = userFriendList.some((friend) => friend._id === user._id);
+  const isFriend = userFriendList.some((friend) => friend._id === user?._id);
 
   const [loading, setLoading] = useState(false);
 
@@ -30,16 +29,14 @@ function UserBox({ user, fromExplore = false }) {
     try {
       setLoading(true);
       const response = await addToFriend(user._id);
-      toast.success(response?.data?.data?.message || "Friend added successfully!");
+      toast.success(
+        response?.data?.data?.message || "Friend added successfully!"
+      );
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleProfileClick = () => {
-    dispatch(setProfile(user._id));
   };
 
   return (
@@ -48,24 +45,21 @@ function UserBox({ user, fromExplore = false }) {
         user?._id === selectedUser?._id ? "bg-zinc-900" : ""
       }`}
     >
-      {/* Profile Picture */}
-      {/* <div className="profilePic" onClick={handleProfileClick}>
-        <div className={`avatar size-12 ${isOnline ? "online" : ""}`}>
-          <div className="w-24 rounded-full">
-            <img src={user?.profilePicture} alt="Profile" />
-          </div>
-        </div>
-      </div> */}
       <ProfilePic user={user} />
 
       {/* User Info */}
       <div className="flex flex-1 flex-col" onClick={handleClick}>
-        <div className="name text-lg font-semibold">{user?.username || "Username"}</div>
-        {!fromExplore && <div className="text-sm font-sm text-zinc-400">Last message</div>}
+        <div className="name text-lg font-semibold">
+          {user?.username || "Username"}
+        </div>
+        {!fromExplore ||
+          (fromAi && (
+            <div className="text-sm font-sm text-zinc-400">Last message</div>
+          ))}
       </div>
 
       {/* Add Friend Button (Only in Explore) */}
-      {fromExplore && (
+      {fromExplore && !isFriend && (
         <button
           onClick={handleAddToFriend}
           disabled={loading || isFriend}
@@ -73,9 +67,14 @@ function UserBox({ user, fromExplore = false }) {
             isFriend ? "bg-green-500" : ""
           }`}
         >
-          {isFriend ? "Already Friend" : loading ? "Adding..." : "Add to Friend"}
+          {isFriend
+            ? "Already Friend"
+            : loading
+            ? "Adding..."
+            : "Add to Friend"}
         </button>
       )}
+      {fromAi && <button>this is from ai</button>}
     </div>
   );
 }

@@ -1,22 +1,10 @@
-// import { configureStore } from '@reduxjs/toolkit'
-// import userReducers from '../redux/userSlices'
-
-// const store = configureStore({
-//     reducer: {
-//         user: userReducers
-//     }
-// })
-
-// export default store
-
-
-
 import { configureStore } from "@reduxjs/toolkit";
 import userReducers from "../redux/userSlices";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // Defaults to localStorage for web
 import messageSlice from "../redux/messageSlices";
 import socketSlice from "../redux/socketSlices";
+import codeSlice from "../redux/codeSlice";
 
 // Persist config
 const persistConfig = {
@@ -33,7 +21,8 @@ const store = configureStore({
   reducer: {
     user: persistedReducer, // Use persisted reducer
     messages: messageSlice,
-    socket: socketSlice
+    socket: socketSlice,
+    codes: codeSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

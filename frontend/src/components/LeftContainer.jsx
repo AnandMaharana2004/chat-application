@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import UserContainer from "./UserContainer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import LogOut from "./LogOut";
 import { IoIosNotificationsOutline, IoIosSearch } from "react-icons/io";
+import { FaLaptopCode } from "react-icons/fa6";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import GroupContainer from "./GroupContainer";
-import FavorateContainer from "./FavorateContainer";
+
 import { MdOutlineExplore } from "react-icons/md";
 import Explore from "./Explore";
 import ProfilePic from "./ProfilePic";
+import AiContainer from "./AiContainer";
+import { setCode } from "../redux/codeSlice";
 
 function LeftContainer({ className }) {
+  const dispatch = useDispatch();
   const [activeChat, setActiveChat] = useState("single");
   const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState(false);
   const user = useSelector((state) => state?.user?.authUser || {});
@@ -33,8 +36,8 @@ function LeftContainer({ className }) {
     };
   }, []);
 
-  const handleGroupChatClick = () => {
-    setActiveChat("group");
+  const handleAiClick = () => {
+    setActiveChat("aiContainer");
   };
   const handleSingleChatClick = () => {
     setActiveChat("single");
@@ -61,7 +64,10 @@ function LeftContainer({ className }) {
             />
           </button>
           <button aria-label="Search">
-            <IoIosSearch className="w-6 h-6 text-white" />
+            <FaLaptopCode
+              className="w-6 h-6 text-white"
+              onClick={handleAiClick}
+            />
           </button>
           <div className="notification relative cursor-pointer">
             <IoIosNotificationsOutline className="w-6 h-6 text-white" />
@@ -130,8 +136,7 @@ function LeftContainer({ className }) {
         {
           {
             single: <UserContainer />,
-            group: <GroupContainer />,
-            favorate: <FavorateContainer />,
+            aiContainer: <AiContainer callback={handleSingleChatClick} />,
             explore: <Explore callback={handleSingleChatClick} />,
           }[activeChat]
         }

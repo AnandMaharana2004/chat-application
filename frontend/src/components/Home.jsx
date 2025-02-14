@@ -36,49 +36,47 @@ function Home() {
   }, [selectedUser, profile]);
   return (
     <>
-  {!isMobile && (
-    <div className="bg-gray-800 h-screen rounded p-1 overflow-hidden">
-      <div
-        className={`bg-gray-800 grid grid-cols-[35%_65%]  
+      {!isMobile && (
+        <div className="bg-gray-800 h-screen rounded p-1 overflow-hidden">
+          <div
+            className={`bg-gray-800 grid grid-cols-[35%_65%]  
           ${
-            profile
-              ? `lg:grid-cols-[30%_40%_30%]`
-              : `lg:grid-cols-[30%_70%]`
+            profile ? `lg:grid-cols-[30%_40%_30%]` : `lg:grid-cols-[30%_70%]`
           } md:grid-cols-[50%_50%] 
           h-full w-full rounded md:px-10 lg:px-20 py-5`}
-      >
-        {/* Make each section scrollable if content exceeds space */}
-        <div className="overflow-y-auto max-h-full">
-          <LeftContainer className={"border"} />
-        </div>
-        <div className="overflow-y-auto max-h-full">
-          <RightContainer className={"border border-l-0"} />
-        </div>
-        {profile && (
-          <div className="overflow-y-auto max-h-full">
-            <Profile className={"border border-l-0"} />
+          >
+            {/* Make each section scrollable if content exceeds space */}
+            <div className="overflow-y-auto max-h-full">
+              <LeftContainer className={"border"} />
+            </div>
+            <div className="overflow-y-auto max-h-full">
+              <RightContainer className={"border border-l-0"} />
+            </div>
+            {profile && (
+              <div className="overflow-y-auto max-h-full">
+                <Profile className={"border border-l-0"} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </div>
-  )}
+        </div>
+      )}
 
-  {isMobile && (
-    <div className="h-screen w-screen overflow-hidden">
-      <div className="h-full w-full overflow-y-auto">
-        {
-          {
-            home: <LeftContainer className={"border-0"} />,
-            chat: <RightContainer className={"border-0"} />,
-            profile: (
-              <Profile close={setSelectComponent} className={"border-0"} />
-            ),
-          }[selectComponent]
-        }
-      </div>
-    </div>
-  )}
-</>
+      {isMobile && (
+        <div className="h-screen w-screen overflow-hidden">
+          <div className="h-full w-full overflow-y-auto">
+            {
+              {
+                home: <LeftContainer className={"border-0"} />,
+                chat: <RightContainer className={"border-0"} />,
+                profile: (
+                  <Profile close={setSelectComponent} className={"border-0"} />
+                ),
+              }[selectComponent]
+            }
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

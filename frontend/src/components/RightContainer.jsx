@@ -3,10 +3,9 @@ import MessageContainer from "./MessageContainer";
 import { useDispatch, useSelector } from "react-redux";
 import useGetRealtimeMessages from "../hooks/useGetRealTimeMessages";
 import { setSelectedUsers, setUserFavorateList } from "../redux/userSlices";
-import { IoIosVideocam } from "react-icons/io";
 import { IoArrowBackSharp } from "react-icons/io5";
+import { GoCodeReview } from "react-icons/go";
 import {
-  MdAddCall,
   MdOutlineDeleteOutline,
   MdPerson,
   MdFavorite,
@@ -14,6 +13,7 @@ import {
 import { BsThreeDotsVertical, BsPersonFillSlash } from "react-icons/bs";
 import SendMessage from "./SendMessage";
 import ProfilePic from "./ProfilePic";
+import CodeEditor from "./CodeContainer";
 
 function RightContainer({ className }) {
   useGetRealtimeMessages();
@@ -21,7 +21,7 @@ function RightContainer({ className }) {
   const { authUser, selectedUser } = useSelector((state) => state.user);
   const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
-
+  const {code} = useSelector(store => store.codes)
   const isFavorate =
     selectedUser && authUser.favoriteList.includes(selectedUser._id);
 
@@ -68,10 +68,9 @@ function RightContainer({ className }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={handleGoBack}
-                className="p-2 hover:bg-gray-200 rounded-full"
-                aria-label="Go back"
+                className="text-white px-3 py-3 rounded bg-gray-700 hover:bg-gray-600"
               >
-                <IoArrowBackSharp className="h-5 w-5 lg:h-6 lg:w-6" />
+                <IoArrowBackSharp />
               </button>
               <ProfilePic user={selectedUser} />
               <div className="text-sm lg:text-base font-semibold">
@@ -87,8 +86,7 @@ function RightContainer({ className }) {
                   isFavorate ? "text-red-700" : ""
                 }`}
               />
-              <IoIosVideocam className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer" />
-              <MdAddCall className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer" />
+              <GoCodeReview className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer" />
               <div className="relative" ref={dropdownRef}>
                 <BsThreeDotsVertical
                   className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer"
@@ -122,14 +120,14 @@ function RightContainer({ className }) {
           </div>
 
           {/* Middle Section */}
-          <div className="middle flex-grow overflow-y-auto ">
+          {!code && <div className="middle flex-grow overflow-y-auto ">
             <MessageContainer />
-          </div>
-
+          </div>}
+            {code && <CodeEditor />}
           {/* Bottom Section */}
-          <div className="sticky bottom-0">
+          {!code && <div className="sticky bottom-0">
             <SendMessage />
-          </div>
+          </div>}
         </div>
       )}
     </>

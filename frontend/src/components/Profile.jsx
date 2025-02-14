@@ -12,12 +12,12 @@ import ProfilePic from "./ProfilePic";
 
 function Profile({ close, className }) {
   const dispatc = useDispatch();
-  const { profile } = useSelector((store) => store.user);
-  const [isButtonShow, setIsButtonShow] = useState(true);
+  const { profile, authUser } = useSelector((store) => store.user);
+  const [isButtonShow, setIsButtonShow] = useState(false);
+  if (authUser._id == profile) setIsButtonShow(true);
   const [isEditable, setIsEditable] = useState(false);
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
-  // const [data, setData] = useState(null)
   const [profilePicture, setProfilePicture] = useState("");
   const [about, setAbout] = useState("The nature is so cool");
 
@@ -48,7 +48,7 @@ function Profile({ close, className }) {
       setBio(e.target.value);
     }
   };
-  
+
   const handleAbout = (e) => {
     e.preventDefault();
     if (isEditable == true) {
@@ -75,7 +75,7 @@ function Profile({ close, className }) {
         {/* <div className="image-circule rounded-full w-44 h-44 z-10 mt-20 border-4 border-dark-bg p-1 bg-active-green">
           <img src={`${profilePicture}`} alt="" />
         </div> */}
-        <ProfilePic url={profilePicture} className={'w-44 h-44 mt-10'}/>
+        <ProfilePic url={profilePicture} className={"w-44 h-44 mt-10"} />
         <div className="userName font-bold text-clr-w my-1 mb-4 text-large-text ">
           {username}
         </div>
@@ -108,7 +108,7 @@ function Profile({ close, className }) {
           onChange={(e) => handleBio(e)}
           value={bio}
         />
-        {isButtonShow == true ? (
+        {isButtonShow ? (
           <>
             <button
               className={`px-4 py-1 bg-active-green mx-auto rounded-md items-center gap-1 ${
@@ -136,9 +136,6 @@ function Profile({ close, className }) {
         ) : (
           ""
         )}
-      </div>
-      <div className="buttons">
-        {/* <button className="bg-active-green px-5 py-1 rounded-md flex items-center text-clr-w my-2"> Add to Favorate</button> */}
       </div>
     </div>
   );

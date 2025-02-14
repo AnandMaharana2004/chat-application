@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setCode } from "../redux/codeSlice";
+import { js_beautify } from "js-beautify";
 
 function useOutsideClick(ref, callback) {
   const handleClick = useCallback(
@@ -20,6 +22,7 @@ function useOutsideClick(ref, callback) {
 }
 
 function MessageBox({ message }) {
+  const dispatch = useDispatch();
   const { authUser, selectedUser } = useSelector((state) => state.user);
   const date = new Date(message?.createdAt ?? Date.now());
   const time = date.toLocaleTimeString([], {
@@ -36,6 +39,12 @@ function MessageBox({ message }) {
 
   useOutsideClick(dropdownRef, () => setIsThreeDotMenuOpen(false));
 
+  const handleViewCode = () => {
+    const codeString = message?.code;
+    const formattedCode = js_beautify(codeString, { indent_size: 2 }); // Use js_beautify directly
+    dispatch(setCode(formattedCode));
+  };
+
   return (
     <div
       className={`relative chat ${
@@ -51,6 +60,23 @@ function MessageBox({ message }) {
         >
           {message.content}
         </div>
+      )}
+      {message.code && (
+        <>
+          <div
+            className={`chat-bubble ${
+              message?.sender === authUser?._id ? "bg-[#2443b2]" : ""
+            } text-white `}
+          >
+            {/* <h3>code: </h3> */}
+            <button
+              className="bg-blue-900 px-3 py-1 rounded"
+              onClick={handleViewCode}
+            >
+              view code{" "}
+            </button>
+          </div>
+        </>
       )}
       {message?.media?.length > 0 && (
         <div

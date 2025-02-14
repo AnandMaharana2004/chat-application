@@ -31,6 +31,15 @@ const deleteMediaForEveryone = async (messageId) => {
     return axiosInstance.delete(`/message/delete-media-for-everyone${messageId}`);
 };
 
+// const codeSend = async (conversationId, codeData) => {
+//     const code = codeData.trim()
+//     return axiosInstance.post(`/message/send-code/${conversationId}`, code);
+// }
+
+const codeSend = async (conversationId, codeData) => {
+    return axiosInstance.post(`/message/send-code/${conversationId}`, {code : codeData})
+};
+
 const getMessages = async (conversationId) => {
     return axiosInstance.get(`/message/get-messages/${conversationId}`);
 }
@@ -43,5 +52,6 @@ export {
     deleteMediaForMe,
     deleteMessageForEveryone,
     deleteMediaForEveryone,
+    codeSend,
     getMessages
 }; 

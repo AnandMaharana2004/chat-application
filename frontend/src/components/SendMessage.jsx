@@ -6,6 +6,10 @@ import toast from "react-hot-toast";
 import { sendMediaMessage, sendMessage } from "../api/messageApi";
 import { ImAttachment } from "react-icons/im";
 import { useAxiosCall } from "../hooks/useAxiosCall";
+import { FaLaptopCode } from "react-icons/fa6";
+import { setCode } from "../redux/codeSlice";
+import { FaCode } from "react-icons/fa6";
+
 
 function SendMessage() {
   const { selectedUser } = useSelector((store) => store.user);
@@ -40,7 +44,7 @@ function SendMessage() {
         );
         if (!data) return toast.error("500 something went wrong");
         console.log(data);
-        dispatch(setMessages([...message,data]));
+        dispatch(setMessages([...message, data]));
         setText("");
         setFile(null);
       } catch (error) {
@@ -52,9 +56,13 @@ function SendMessage() {
       );
       if (!data) return toast.error("500 something went wrong");
       console.log(data);
-      dispatch(setMessages([...message,data]));
+      dispatch(setMessages([...message, data]));
       setText("");
     }
+  };
+
+  const handleAiClick = () => {
+    dispatch(setCode("//how are you miss"));
   };
 
   useEffect(() => {
@@ -64,6 +72,9 @@ function SendMessage() {
 
   return (
     <div className="bottom w-full flex gap-2">
+      <button className="btn btn-neutral" onClick={handleAiClick}>
+        <FaCode />
+      </button>
       <button className="btn btn-neutral" onClick={handleFileInputClick}>
         <ImAttachment />
       </button>
