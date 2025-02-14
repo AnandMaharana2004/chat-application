@@ -128,7 +128,7 @@ const SendTextMessage = AsyncHandler(async (req, res) => {
     // socket implementation
     const resiverSocketId = getResiverSocketId(receivers[0]._id)
 
-    console.log("resiver socket id is : ",resiverSocketId);
+    console.log("resiver socket id is : ", resiverSocketId);
     io.to(resiverSocketId).emit("newMessage", newMessage)
 
     return res
@@ -248,8 +248,8 @@ const SendMediaMessage = AsyncHandler(async (req, res) => {
             type: file.mimetype.split("/")[0],
             name: file.originalname,
             size: file.size,
-            height : uploadResult.height,
-            width : uploadResult.width
+            height: uploadResult.height,
+            width: uploadResult.width
 
         })
     } catch {
@@ -418,6 +418,27 @@ const DeleteMediaForEveryone = AsyncHandler(async (req, res) => {
     );
 });
 
+const sendCode = AsyncHandler(async (req, res) => {
+    const userId = req.userId;
+    const { id: conversationId } = req.params;
+    const { code } = req.body;
+
+    if (!userId) throw new ApiError(401, "Unauthorized credentials");
+    if (!conversationId) throw new ApiError(400, "Conversation ID is required");
+    if (!code) throw new ApiError(400, "Code is required");
+
+    const isParticipant = await Conversation.exists({ _id: conversationId, participants: userId });
+    if (!isParticipant) throw new ApiError(403, "You are not a participant of this conversation");
+
+    const newMessage = await Message.create({
+        code,
+        sender: userId,
+        conversation: conversationId
+    });
+
+    return res.status(201).json(new ApiResponse(201, newMessage, "Code message sent successfully"));
+});
+
 const GetMessages = AsyncHandler(async (req, res) => {
     const { conversationId } = req.params;
 
@@ -457,9 +478,9 @@ const GetMessages = AsyncHandler(async (req, res) => {
         conversation: conversationId
     })
 
-    if (!messages.length)   return res.status(200).json(new ApiResponse(200, [], "Empty messages"));
+    if (!messages.length) return res.status(200).json(new ApiResponse(200, [], "Empty messages"));
 
-        return res.status(200).json(new ApiResponse(200, messages, "Messages retrieved successfully"));
+    return res.status(200).json(new ApiResponse(200, messages, "Messages retrieved successfully"));
 
 });
 
@@ -471,5 +492,6 @@ export {
     DeleteMediaMessageForMe,
     DeleteMessageForEveryone,
     DeleteMediaForEveryone,
+    sendCode,
     GetMessages
 }
