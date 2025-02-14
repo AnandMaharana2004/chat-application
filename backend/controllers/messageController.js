@@ -425,10 +425,13 @@ const sendCode = AsyncHandler(async (req, res) => {
 
     if (!userId) throw new ApiError(401, "Unauthorized credentials");
     if (!conversationId) throw new ApiError(400, "Conversation ID is required");
+    const conversation = await Conversation.findById(conversationId)
+    if(!conversation) throw new ApiError(400, "invalid conversation id")
     if (!code) throw new ApiError(400, "Code is required");
 
-    const isParticipant = await Conversation.exists({ _id: conversationId, participants: userId });
-    if (!isParticipant) throw new ApiError(403, "You are not a participant of this conversation");
+    if (!conversation.participants.some((participant) => participant.equals(userId))) {
+        throw new ApiError(403, "You are not a participant of this conversation");
+    }
 
     const newMessage = await Message.create({
         code,
