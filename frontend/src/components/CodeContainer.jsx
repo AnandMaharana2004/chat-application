@@ -1,14 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useAxiosCall } from "../hooks/useAxiosCall";
 import { useDispatch, useSelector } from "react-redux";
 import { setCode } from "../redux/codeSlice";
-import { IoArrowBackSharp } from "react-icons/io5";
 import { IoMdSend } from "react-icons/io";
 import { MdOutlineClear } from "react-icons/md";
 import { codeSend } from "../api/messageApi";
 import { setMessages } from "../redux/messageSlices";
-
 
 const CodeEditor = () => {
   const dispatch = useDispatch();
@@ -16,20 +14,28 @@ const CodeEditor = () => {
   const { code } = useSelector((store) => store.codes);
   const { selectedUser } = useSelector((store) => store.user);
   const { message } = useSelector((store) => store.messages);
-  const { loading, fetchData, error } = useAxiosCall();
+  const { loading, fetchData } = useAxiosCall();
 
   const sendCode = async (e) => {
-    // dispatch(setCode(codeText));
-    // console.log(code);
-    // console.log(code);
-    console.log(typeof codeText);
-    const data = await fetchData(() => codeSend(selectedUser.conversationId, codeText));
-    console.log(data);
-    dispatch(setMessages([...message,data]));
+    try {
+      const data = await fetchData(() =>
+        codeSend(selectedUser.conversationId, codeText)
+      );
+      dispatch(setMessages([...message, data]));
+      setCodeText("");
+      dispatch(setCode(null));
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   const handleGoBack = () => {
     dispatch(setCode(null));
+  };
+
+  const copyHandler = () => {
+    setCodeText(code);
+    navigator.clipboard.writeText(codeText);
   };
 
   return (
@@ -41,7 +47,10 @@ const CodeEditor = () => {
         >
           <MdOutlineClear className="size-4 text-sm" />
         </button>
-        <button className="bg-green-700 text-white px-4 py-2 text-sm rounded hover:bg-green-600">
+        <button
+          className="bg-green-700 text-white px-4 py-2 text-sm rounded hover:bg-green-600"
+          onClick={copyHandler}
+        >
           copy
         </button>
       </div>
@@ -57,6 +66,7 @@ const CodeEditor = () => {
             fontSize: 14,
             scrollBeyondLastLine: false,
             automaticLayout: true,
+            wordWrap: "on",
           }}
         />
       </div>
@@ -65,7 +75,10 @@ const CodeEditor = () => {
         className="btn btn-neutral absolute bottom-4 right-4"
         onClick={sendCode}
       >
-        <IoMdSend />
+        {!loading && <IoMdSend />}
+        {loading && (
+        <span className="loading loading-spinner loading-lg mx-auto size-3"></span>
+      )}
       </button>
     </div>
   );

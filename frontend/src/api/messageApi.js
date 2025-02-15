@@ -19,8 +19,8 @@ const sendMediaMessage = async (conversationId, file) => {
     return axiosInstance.post(`/message/send-media/${conversationId}`, formData);
 }
 
-const deleteMediaForMe = async (mediaId) => {
-    return axiosInstance.put(`/message/delete-media-for-me/${mediaId}`);
+const deleteMediaForMe = async (messageId) => {
+    return axiosInstance.put(`/message/delete-media-for-me/${messageId}`);
 }
 
 const deleteMessageForEveryone = async (messageId) => {

@@ -4,6 +4,7 @@ import { setSelectedUsers } from "../redux/userSlices";
 import { addToFriend } from "../api/userApi";
 import toast from "react-hot-toast";
 import ProfilePic from "./ProfilePic";
+import { setCode } from "../redux/codeSlice";
 
 function UserBox({ user, fromExplore = false, fromAi = false }) {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ function UserBox({ user, fromExplore = false, fromAi = false }) {
     e.preventDefault();
     if (!fromExplore && selectedUser?._id !== authUser?._id) {
       dispatch(setSelectedUsers(user));
+      dispatch(setCode(null))
     }
   };
 

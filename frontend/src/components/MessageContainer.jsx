@@ -3,7 +3,6 @@ import MessageBox from "../components/MessageBox";
 import { useDispatch, useSelector } from "react-redux";
 import { setMessages } from "../redux/messageSlices";
 import toast from "react-hot-toast";
-import axios from "axios";
 import useGetMessages from "../hooks/useGetMessages";
 import useGetRealtimeMessages from "../hooks/useGetRealTimeMessages";
 import { sendMessage } from "../api/messageApi";

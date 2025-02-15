@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCode } from "../redux/codeSlice";
 import { js_beautify } from "js-beautify";
+import { useAxiosCall } from "../hooks/useAxiosCall";
+import { deleteMediaForMe, deleteMessageForMe } from "../api/messageApi";
+import { removeMessage } from "../redux/messageSlices";
 
 function useOutsideClick(ref, callback) {
   const handleClick = useCallback(
@@ -33,6 +36,8 @@ function MessageBox({ message }) {
   const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const { loading, error, fetchData } = useAxiosCall();
+
   const handleThreeDot = () => {
     setIsThreeDotMenuOpen((prev) => !prev);
   };
@@ -44,6 +49,35 @@ function MessageBox({ message }) {
     const formattedCode = js_beautify(codeString, { indent_size: 2 }); // Use js_beautify directly
     dispatch(setCode(formattedCode));
   };
+  const handleDeleteForEveryOne = () => {};
+
+  const handleDeleteForMe = async () => {
+    if (!message.content == "") {
+      try {
+        const data = await fetchData(() => deleteMessageForMe(message._id));
+        console.log(data);
+        if (data) return dispatch(removeMessage(message));
+      } catch (error) {
+        console.log(
+          error.message || "Something went worng while deliting the text"
+        );
+      }
+    }
+    if (message.media.length > 0) {
+      try {
+        console.log("is commoing");
+        const data = await fetchData(() => deleteMediaForMe(message._id));
+        console.log(data);
+        if (data) return dispatch(removeMessage(message));
+      } catch (error) {
+        console.log(
+          error.message || "something went wrong while deleting the file"
+        );
+      }
+    }
+  };
+
+  const handleUpdateMessage = () => {};
 
   return (
     <div
@@ -64,11 +98,11 @@ function MessageBox({ message }) {
       {message.code && (
         <>
           <div
+            onClick={handleThreeDot}
             className={`chat-bubble ${
               message?.sender === authUser?._id ? "bg-[#2443b2]" : ""
             } text-white `}
           >
-            {/* <h3>code: </h3> */}
             <button
               className="bg-blue-900 px-3 py-1 rounded"
               onClick={handleViewCode}
@@ -101,17 +135,20 @@ function MessageBox({ message }) {
         >
           <ul className="flex flex-col gap-2">
             <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer">
-              <button>delete for me</button>
+              <button onClick={handleDeleteForMe}>Delet For Me</button>
             </li>
-            <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer">
-              <button>delete for everyone</button>
-            </li>
-            <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer">
-              <button>update message</button>
-            </li>
-            <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer text-red-600">
-              <button>Clear Chat</button>
-            </li>
+            {message.sender == authUser._id && (
+              <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer">
+                <button onClick={handleDeleteForEveryOne}>
+                  delete for everyone
+                </button>
+              </li>
+            )}
+            {message.sender == authUser._id && (
+              <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer">
+                <button onClick={handleUpdateMessage}>update message</button>
+              </li>
+            )}
           </ul>
         </div>
       )}
