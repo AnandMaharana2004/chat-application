@@ -158,7 +158,7 @@ const DeleteTextMessageForMe = AsyncHandler(async (req, res) => {
         return res
             .status(400)
             .json(
-                new ApiResponse(400, null, "You have already deleted this message for yourself")
+                new ApiResponse(400, true, "You have already deleted this message for yourself")
             );
     }
 
@@ -175,7 +175,7 @@ const DeleteTextMessageForMe = AsyncHandler(async (req, res) => {
         await Message.findByIdAndDelete(messageId);
 
         return res.status(200).json(
-            new ApiResponse(200, null, "Message deleted for all participants")
+            new ApiResponse(200, true, "Message deleted for all participants")
         );
     }
 
@@ -183,7 +183,7 @@ const DeleteTextMessageForMe = AsyncHandler(async (req, res) => {
     await message.save();
 
     return res.status(200).json(
-        new ApiResponse(200, message, "Message successfully deleted for you")
+        new ApiResponse(200, true, "Message successfully deleted for you")
     );
 });
 
@@ -308,15 +308,17 @@ const DeleteMediaMessageForMe = AsyncHandler(async (req, res) => {
 
     if (allDeleted) {
         // Remove the media files from Cloudinary
-        for (const mediaItem of message.media) {
-            await deleteFromCloudinary(mediaItem.url);
+        try {
+            await deleteFromCloudinary(message.media[0].url);
+        } catch (error) {
+            throw new ApiError(500, "fail to delete file from cloudinary")
         }
 
         // Delete the message from the database
         await Message.findByIdAndDelete(messageId);
 
         return res.status(200).json(
-            new ApiResponse(200, null, "Media message deleted for all participants")
+            new ApiResponse(200, true, "Media message deleted for all participants")
         );
     }
 
@@ -426,7 +428,7 @@ const sendCode = AsyncHandler(async (req, res) => {
     if (!userId) throw new ApiError(401, "Unauthorized credentials");
     if (!conversationId) throw new ApiError(400, "Conversation ID is required");
     const conversation = await Conversation.findById(conversationId)
-    if(!conversation) throw new ApiError(400, "invalid conversation id")
+    if (!conversation) throw new ApiError(400, "invalid conversation id")
     if (!code) throw new ApiError(400, "Code is required");
 
     if (!conversation.participants.some((participant) => participant.equals(userId))) {
@@ -443,6 +445,12 @@ const sendCode = AsyncHandler(async (req, res) => {
 });
 
 const GetMessages = AsyncHandler(async (req, res) => {
+    const userId = req.userId;
+
+    const user = await User.findById(userId)
+
+    if (!user) throw new ApiError(400, "user not found ")
+
     const { conversationId } = req.params;
 
     if (!conversationId) throw new ApiError(400, "Conversation ID is required");
@@ -450,40 +458,15 @@ const GetMessages = AsyncHandler(async (req, res) => {
     if (!checkMongoId(conversationId)) throw new ApiError(400, "Invalid Conversation ID");
 
     const convertedObjectId = ConvertToObjectId(conversationId);
-    // console.log("Converted ObjectId:", convertedObjectId);
-
-    // const messages = await Message.aggregate([
-    //     { $match: { conversation: convertedObjectId } },
-    //     {
-    //         $lookup: {
-    //             from: "users",
-    //             localField: "sender",
-    //             foreignField: "_id",
-    //             as: "senderInfo"
-    //         }
-    //     },
-    //     { $unwind: { path: "$senderInfo", preserveNullAndEmptyArrays: true } },
-    //     {
-    //         $project: {
-    //             content: 1,
-    //             media: 1,
-    //             createdAt: 1,
-    //             "senderInfo._id": 1, // send the message sernder id as the sender not the senderInfo and inside it the _id 
-    //             "senderInfo.profilePicture": 1,
-    //             deletedFor: 1,
-    //             isDeletedForEveryone: 1
-    //         }
-    //     },
-    //     { $sort: { createdAt: -1 } }
-    // ]);
 
     const messages = await Message.find({
         conversation: conversationId
     })
-
     if (!messages.length) return res.status(200).json(new ApiResponse(200, [], "Empty messages"));
 
-    return res.status(200).json(new ApiResponse(200, messages, "Messages retrieved successfully"));
+    const filteredMessages = messages.filter(message => !message.deletedFor.includes(user._id));
+
+    return res.status(200).json(new ApiResponse(200, filteredMessages, "Messages retrieved successfully"));
 
 });
 
