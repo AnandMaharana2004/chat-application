@@ -19,8 +19,10 @@ const messageSlice = createSlice({
                 if (mes._id === action.payload._id) {
                     return {
                         ...mes,
-                        content: action.payload.content,
-                        isDeletedForEveryone: action.payload.isDeletedForEveryone,
+                        content: action.payload.content || "",
+                        isDeletedForEveryone: action.payload.isDeletedForEveryone || true,
+                        code : action.payload.code || "",
+                        media : action.payload.media || [],
                     };
                 }
                 return mes;

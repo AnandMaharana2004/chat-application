@@ -4,12 +4,14 @@ import { setCode } from "../redux/codeSlice";
 import { js_beautify } from "js-beautify";
 import { useAxiosCall } from "../hooks/useAxiosCall";
 import {
+  deleteMediaForEveryone,
   deleteMediaForMe,
   deleteMessageForEveryone,
   deleteMessageForMe,
 } from "../api/messageApi";
 import { removeMessage, replaceMessage } from "../redux/messageSlices";
 import { IoBanOutline } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 function useOutsideClick(ref, callback) {
   const handleClick = useCallback(
@@ -56,33 +58,54 @@ function MessageBox({ message }) {
   };
 
   const handleDeleteForEveryOne = async () => {
-    const data = await fetchData(() => deleteMessageForEveryone(message._id));
-    console.log(data);
-    if (data) return dispatch(replaceMessage(data));
-  };
-
-  const handleDeleteForMe = async () => {
-    if (!message.content == "") {
+    if (!message.content == "" || !message.code == "") {
       try {
-        const data = await fetchData(() => deleteMessageForMe(message._id));
+        const data = await fetchData(() =>
+          deleteMessageForEveryone(message._id)
+        );
         console.log(data);
-        if (data) return dispatch(removeMessage(message));
+        if (data)
+          return dispatch(replaceMessage(data), setIsThreeDotMenuOpen(false));
       } catch (error) {
-        console.log(
-          error.message || "Something went worng while deliting the text"
+        return toast.error(
+          error.message || "something went wrong, Fail to deletemessage"
         );
       }
     }
     if (message.media.length > 0) {
       try {
-        console.log("is commoing");
+        const data = await fetchData(deleteMediaForEveryone(message._id));
+        if (data)
+          return dispatch(replaceMessage(data)), setIsThreeDotMenuOpen(false);
+      } catch (error) {
+        return toast.error(
+          error.message || "something went wrong, Fail to delete media Message"
+        );
+      }
+    }
+  };
+
+  const handleDeleteForMe = async () => {
+    if (!message.content == "" || !message.code == "") {
+      try {
+        const data = await fetchData(() => deleteMessageForMe(message._id));
+        console.log(data);
+        if (data)
+          return dispatch(removeMessage(message)), setIsThreeDotMenuOpen(false);
+      } catch (error) {
+        toast.error(
+          error.message || "Something went worng while deliting text or content"
+        );
+      }
+    }
+    if (message.media.length > 0) {
+      try {
         const data = await fetchData(() => deleteMediaForMe(message._id));
         console.log(data);
-        if (data) return dispatch(removeMessage(message));
+        if (data)
+          return dispatch(removeMessage(message), setIsThreeDotMenuOpen(false));
       } catch (error) {
-        console.log(
-          error.message || "something went wrong while deleting the file"
-        );
+        toast(error.message || "something went wrong while deleting the file");
       }
     }
   };
