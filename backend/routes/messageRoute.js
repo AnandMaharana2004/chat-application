@@ -21,7 +21,7 @@ router.route('/update-message/:id').put(auth_verify, UpdateMessage);
 router.route('/send-media/:id').post(auth_verify, upload.single("media"), SendMediaMessage); // use upload middleware for file uploading
 router.route('/delete-media-for-me/:id').put(auth_verify, DeleteMediaMessageForMe);
 router.route('/delete-message-for-everyone/:id').delete(auth_verify, DeleteMessageForEveryone);
-router.route('/delte-media-for-everyone/:id').delete(auth_verify, DeleteMediaForEveryone);
+router.route('/delete-media-for-everyone/:id').delete(auth_verify, DeleteMediaForEveryone);
 router.route('/send-code/:id').post(auth_verify, sendCode); // send code snippet 
 router.route('/get-messages/:conversationId').get(auth_verify, GetMessages); //✅
 
