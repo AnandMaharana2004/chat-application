@@ -309,7 +309,7 @@ const DeleteMediaMessageForMe = AsyncHandler(async (req, res) => {
     if (allDeleted) {
         // Remove the media files from Cloudinary
         try {
-            await deleteFromCloudinary(message.media[0].url);
+            await deleteFromCloudinary(mediaItem.url);
         } catch (error) {
             throw new ApiError(500, "fail to delete file from cloudinary")
         }
@@ -318,7 +318,7 @@ const DeleteMediaMessageForMe = AsyncHandler(async (req, res) => {
         await Message.findByIdAndDelete(messageId);
 
         return res.status(200).json(
-            new ApiResponse(200, true, "Media message deleted for all participants")
+            new ApiResponse(200, null, "Media message deleted for all participants")
         );
     }
 
@@ -346,14 +346,11 @@ const DeleteMessageForEveryone = AsyncHandler(async (req, res) => {
         throw new ApiError(403, "You can only delete your own messages for everyone");
     }
 
-    // Update the message to mark it as deleted for everyone
     message.isDeletedForEveryone = true;
+    message.content = "This message has been deleted";
+    message.media = [];
+    message.code = ""
 
-    // Remove the message content (optional, based on your requirements)
-    message.content = null;
-    message.media = []; // Clear any media files if you want to remove them
-
-    // Update the message in the database
     await message.save();
 
     // Inform all participants that the message was deleted
@@ -364,7 +361,7 @@ const DeleteMessageForEveryone = AsyncHandler(async (req, res) => {
     // Emit a notification for message deletion if necessary (using sockets or a service)
 
     return res.status(200).json(
-        new ApiResponse(200, null, "Message successfully deleted for everyone")
+        new ApiResponse(200, message, "Message successfully deleted for everyone")
     );
 });
 
