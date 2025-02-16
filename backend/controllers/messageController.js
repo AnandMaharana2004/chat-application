@@ -396,7 +396,8 @@ const DeleteMediaForEveryone = AsyncHandler(async (req, res) => {
 
     // Clear the media content and set the message as deleted for everyone
     message.media = [];
-    message.content = ""; // Optionally clear the text content
+    message.content = "This message has been deleted"; // Optionally clear the text content
+    message.code = ""
 
     // Save the updated message
     await message.save();
@@ -413,7 +414,7 @@ const DeleteMediaForEveryone = AsyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(
-        new ApiResponse(200, null, "Media message deleted for everyone")
+        new ApiResponse(200, message, "Media message deleted for everyone")
     );
 });
 
