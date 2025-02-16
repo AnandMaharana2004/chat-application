@@ -28,7 +28,7 @@ const deleteMessageForEveryone = async (messageId) => {
 }
 
 const deleteMediaForEveryone = async (messageId) => {
-    return axiosInstance.delete(`/message/delete-media-for-everyone${messageId}`);
+    return axiosInstance.delete(`/message/delete-media-for-everyone/${messageId}`);
 };
 
 // const codeSend = async (conversationId, codeData) => {

@@ -74,7 +74,8 @@ function MessageBox({ message }) {
     }
     if (message.media.length > 0) {
       try {
-        const data = await fetchData(deleteMediaForEveryone(message._id));
+        const data = await fetchData(() => deleteMediaForEveryone(message._id));
+        console.log(data);
         if (data)
           return dispatch(replaceMessage(data)), setIsThreeDotMenuOpen(false);
       } catch (error) {
