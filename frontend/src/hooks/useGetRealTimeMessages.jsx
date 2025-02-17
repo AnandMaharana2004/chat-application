@@ -9,7 +9,7 @@ const useGetRealtimeMessages = () => {
 
   useEffect(() => {
     const handleNewMessage = (newMessage) => {
-      console.log(newMessage);
+      // console.log(newMessage);
       dispatch(setMessages([...message, newMessage])); // Now message will never be null
     };
 

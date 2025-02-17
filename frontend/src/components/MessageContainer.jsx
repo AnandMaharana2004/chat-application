@@ -6,10 +6,12 @@ import toast from "react-hot-toast";
 import useGetMessages from "../hooks/useGetMessages";
 import useGetRealtimeMessages from "../hooks/useGetRealTimeMessages";
 import { sendMessage } from "../api/messageApi";
+import useGetRealTimedeleteForEveryOneMessage from "../hooks/useGetRealTimedeleteForEveryOneMessage";
 
 function MessageContainer() {
   useGetMessages();
   useGetRealtimeMessages();
+  useGetRealTimedeleteForEveryOneMessage()
   const { message: messageArray } = useSelector((store) => store.messages);
   const { selectedUser } = useSelector((store) => store.user);
   const dispatch = useDispatch();
