@@ -128,7 +128,7 @@ const SendTextMessage = AsyncHandler(async (req, res) => {
     // socket implementation
     const resiverSocketId = getResiverSocketId(receivers[0]._id)
 
-    console.log("resiver socket id is : ", resiverSocketId);
+    // console.log("resiver socket id is : ", resiverSocketId);
     io.to(resiverSocketId).emit("newMessage", newMessage)
 
     return res
@@ -341,6 +341,9 @@ const DeleteMessageForEveryone = AsyncHandler(async (req, res) => {
     const message = await Message.findById(messageId);
     if (!message) throw new ApiError(404, "Message not found");
 
+    const sender = await User.findById(userId)
+    if (!sender) throw new ApiError(500, "Sender not found 500")
+
     // Check if the user is the sender of the message
     if (!message.sender.equals(userId)) {
         throw new ApiError(403, "You can only delete your own messages for everyone");
@@ -357,8 +360,42 @@ const DeleteMessageForEveryone = AsyncHandler(async (req, res) => {
     const conversation = await Conversation.findById(message.conversation);
     if (!conversation) throw new ApiError(404, "Conversation not found");
 
-    // Notify all participants in the conversation (optional, may use sockets or other logic)
-    // Emit a notification for message deletion if necessary (using sockets or a service)
+    const receivers = conversation.participants.filter((participant) => !participant.equals(userId));
+
+    if (receivers.length === 0) throw new ApiError(400, "No valid receiver found in the conversation");
+
+    // Validate relationships and blocking logic
+    for (const receiverId of receivers) {
+        const receiver = await User.findById(receiverId).select("blockList");
+        if (!receiver) throw new ApiError(404, "Receiver not found");
+        // if (!sender.friendList.includes(receiverId.toString())) {
+        //     throw new ApiError(400, `User with username ${receiver.username} is not in your friend list`);
+        // }
+        if (sender.blockList.includes(receiverId.toString())) {
+            throw new ApiError(403, `You have blocked user with ID ${receiverId}`);
+        }
+        if (receiver.blockList.includes(userId)) {
+            // If blocked by the receiver, log the message as "deleted for receiver"
+            const newMessage = await Message.create({
+                content,
+                sender: userId,
+                conversation: conversation._id,
+                deletedFor: [receiver._id],
+            });
+
+            return res
+                .status(201)
+                .json(
+                    new ApiResponse(201, newMessage, "Message sent but not delivered (you are blocked by the receiver)")
+                );
+        }
+    }
+
+    // socket implimentation
+    const resiverSocketId = getResiverSocketId(receivers[0]._id)
+
+    // console.log("resiver socket id is : ", resiverSocketId);
+    io.to(resiverSocketId).emit("delete-message-for-everyone", message)
 
     return res.status(200).json(
         new ApiResponse(200, message, "Message successfully deleted for everyone")
