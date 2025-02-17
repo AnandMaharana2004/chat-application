@@ -232,7 +232,11 @@ const SendMediaMessage = AsyncHandler(async (req, res) => {
     const { file } = req
 
     if (!userId) throw new ApiError(401, "Unauthorized credentials");
+    const sender = await User.findById(userId)
+    if (!sender) throw new ApiError(500, "Fail to find receiver")
     if (!conversationId) throw new ApiError(400, "Conversation ID is required");
+    const conversation = await Conversation.findById(conversationId)
+    if (!conversation) throw new ApiError(500, "Fail to find conversation")
     if (!file) throw new ApiError(400, "No media files uploaded");
 
     const isParticipant = await Conversation.exists({ _id: conversationId, participants: userId });
@@ -265,6 +269,44 @@ const SendMediaMessage = AsyncHandler(async (req, res) => {
         _id: conversationId
     },
         { lastMessage: newMessage._id });
+
+    const receivers = conversation.participants.filter((participant) => !participant.equals(userId));
+
+    if (receivers.length === 0) throw new ApiError(400, "No valid receiver found in the conversation");
+
+    // Validate relationships and blocking logic
+    for (const receiverId of receivers) {
+        const receiver = await User.findById(receiverId).select("blockList");
+        if (!receiver) throw new ApiError(404, "Receiver not found");
+        // if (!sender.friendList.includes(receiverId.toString())) {
+        //     throw new ApiError(400, `User with username ${receiver.username} is not in your friend list`);
+        // }
+        if (sender.blockList.includes(receiverId.toString())) {
+            throw new ApiError(403, `You have blocked user with ID ${receiverId}`);
+        }
+        if (receiver.blockList.includes(userId)) {
+            // If blocked by the receiver, log the message as "deleted for receiver"
+            const newMessage = await Message.create({
+                content,
+                sender: userId,
+                conversation: conversation._id,
+                deletedFor: [receiver._id],
+            });
+
+
+
+            return res
+                .status(201)
+                .json(
+                    new ApiResponse(201, newMessage, "Message sent but not delivered (you are blocked by the receiver)")
+                );
+        }
+    }
+
+    const resiverSocketId = getResiverSocketId(receivers[0]._id)
+
+    // console.log("resiver socket id is : ", resiverSocketId);
+    io.to(resiverSocketId).emit("newMessage", newMessage)
 
     return res.status(201).json(new ApiResponse(201, newMessage, "Media message sent successfully"));
 });
@@ -407,6 +449,8 @@ const DeleteMediaForEveryone = AsyncHandler(async (req, res) => {
     const { id: messageId } = req.params; // Message ID from route params
 
     if (!userId) throw new ApiError(401, "Unauthorized credentials");
+    const sender = await User.findById(userId)
+    if (!sender) throw new ApiError(500, "Sender not found 500")
     if (!messageId) throw new ApiError(400, "Message ID is required");
 
     // Find the media message
@@ -423,19 +467,19 @@ const DeleteMediaForEveryone = AsyncHandler(async (req, res) => {
         throw new ApiError(403, "Only the sender can delete the message for everyone");
     }
 
-    // Set the `isDeletedForEveryone` field to true
-    message.isDeletedForEveryone = true;
-
     // Remove the media files from Cloudinary
-    for (const mediaItem of message.media) {
-        await deleteFromCloudinary(mediaItem.url); // Delete from Cloudinary
+    try {
+        const result = await deleteFromCloudinary(message.media[0].url); // Delete from Cloudinary
+        console.log('cloudinary result is : ', result);
+    } catch (error) {
+        throw new ApiError(500, "fail to delete file from cloudinary")
     }
 
     // Clear the media content and set the message as deleted for everyone
     message.media = [];
     message.content = "This message has been deleted"; // Optionally clear the text content
     message.code = ""
-
+    message.isDeletedForEveryone = true;
     // Save the updated message
     await message.save();
 
@@ -450,6 +494,17 @@ const DeleteMediaForEveryone = AsyncHandler(async (req, res) => {
         await conversation.save();
     }
 
+    const receivers = conversation.participants.filter((participant) => !participant.equals(userId));
+
+    if (receivers.length === 0) throw new ApiError(400, "No valid receiver found in the conversation");
+
+    // Validate relationships and blocking logic
+
+    const resiverSocketId = getResiverSocketId(receivers[0]._id)
+
+    // console.log("resiver socket id is : ", resiverSocketId);
+    io.to(resiverSocketId).emit("delete-message-for-everyone", message)
+
     return res.status(200).json(
         new ApiResponse(200, message, "Media message deleted for everyone")
     );
@@ -461,6 +516,8 @@ const sendCode = AsyncHandler(async (req, res) => {
     const { code } = req.body;
 
     if (!userId) throw new ApiError(401, "Unauthorized credentials");
+    const sender = await User.findById(userId)
+    if (!sender) throw new ApiError(500, "sender not found, 500")
     if (!conversationId) throw new ApiError(400, "Conversation ID is required");
     const conversation = await Conversation.findById(conversationId)
     if (!conversation) throw new ApiError(400, "invalid conversation id")
@@ -475,6 +532,44 @@ const sendCode = AsyncHandler(async (req, res) => {
         sender: userId,
         conversation: conversationId
     });
+
+    const receivers = conversation.participants.filter((participant) => !participant.equals(userId));
+
+    if (receivers.length === 0) throw new ApiError(400, "No valid receiver found in the conversation");
+
+    // Validate relationships and blocking logic
+    for (const receiverId of receivers) {
+        const receiver = await User.findById(receiverId).select("blockList");
+        if (!receiver) throw new ApiError(404, "Receiver not found");
+        // if (!sender.friendList.includes(receiverId.toString())) {
+        //     throw new ApiError(400, `User with username ${receiver.username} is not in your friend list`);
+        // }
+        if (sender.blockList.includes(receiverId.toString())) {
+            throw new ApiError(403, `You have blocked user with ID ${receiverId}`);
+        }
+        if (receiver.blockList.includes(userId)) {
+            // If blocked by the receiver, log the message as "deleted for receiver"
+            const newMessage = await Message.create({
+                content,
+                sender: userId,
+                conversation: conversation._id,
+                deletedFor: [receiver._id],
+            });
+
+
+
+            return res
+                .status(201)
+                .json(
+                    new ApiResponse(201, newMessage, "Message sent but not delivered (you are blocked by the receiver)")
+                );
+        }
+    }
+
+    const resiverSocketId = getResiverSocketId(receivers[0]._id)
+
+    // console.log("resiver socket id is : ", resiverSocketId);
+    io.to(resiverSocketId).emit("newMessage", newMessage)
 
     return res.status(201).json(new ApiResponse(201, newMessage, "Code message sent successfully"));
 });
@@ -506,7 +601,7 @@ const GetMessages = AsyncHandler(async (req, res) => {
 });
 
 export {
-    SendTextMessage,
+    SendTextMessage,  
     DeleteTextMessageForMe,
     UpdateMessage,
     SendMediaMessage,
