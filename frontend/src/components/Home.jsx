@@ -4,6 +4,7 @@ import RightContainer from "./RightContainer";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "./Profile";
+import CodeEditor from "./CodeContainer";
 
 function Home() {
   const [selectComponent, setSelectComponent] = useState("home");
@@ -12,6 +13,7 @@ function Home() {
   const { authUser, selectedUser, profile } = useSelector(
     (state) => state.user
   );
+  const { code} = useSelector(store => store.codes)
   if (!authUser) navigate("/login");
   useEffect(() => {
     const handleResize = () => {
@@ -50,7 +52,7 @@ function Home() {
               <LeftContainer className={"border"} />
             </div>
             <div className="overflow-y-auto max-h-full">
-              <RightContainer className={"border border-l-0"} />
+              <RightContainer className={"border-l-0 border"} />
             </div>
             {profile && (
               <div className="overflow-y-auto max-h-full">

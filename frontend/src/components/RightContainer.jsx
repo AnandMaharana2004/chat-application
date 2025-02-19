@@ -5,11 +5,7 @@ import useGetRealtimeMessages from "../hooks/useGetRealTimeMessages";
 import { setSelectedUsers, setUserFavorateList } from "../redux/userSlices";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { GoCodeReview } from "react-icons/go";
-import {
-  MdOutlineDeleteOutline,
-  MdPerson,
-  MdFavorite,
-} from "react-icons/md";
+import { MdOutlineDeleteOutline, MdPerson, MdFavorite } from "react-icons/md";
 import { BsThreeDotsVertical, BsPersonFillSlash } from "react-icons/bs";
 import SendMessage from "./SendMessage";
 import ProfilePic from "./ProfilePic";
@@ -21,7 +17,7 @@ function RightContainer({ className }) {
   const { authUser, selectedUser } = useSelector((state) => state.user);
   const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const {code} = useSelector(store => store.codes)
+  const { code } = useSelector((store) => store.codes);
   const isFavorate =
     selectedUser && authUser.favoriteList.includes(selectedUser._id);
 
@@ -53,11 +49,14 @@ function RightContainer({ className }) {
   return (
     <>
       {selectedUser == null ? (
-        <div
+        <>
+        {code && <CodeEditor style={"border"}/>}
+        {!code && !selectedUser && <div
           className={`h-full w-full flex justify-center items-center text-gray-500 text-lg ${className}`}
         >
           Let's chat with your friends
-        </div>
+        </div>}
+        </>
       ) : (
         <div
           className={`h-full w-full flex flex-col justify-between px-2 py-3 relative ${className}`}
@@ -68,9 +67,9 @@ function RightContainer({ className }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={handleGoBack}
-                className="text-white px-3 py-3 rounded bg-gray-700 hover:bg-gray-600"
+                className="text-white px-3 py-3 rounded bg-gray-700 hover:bg-gray-600 lg:hidden"
               >
-                <IoArrowBackSharp />
+                <IoArrowBackSharp className=""/>
               </button>
               <ProfilePic user={selectedUser} />
               <div className="text-sm lg:text-base font-semibold">
@@ -120,14 +119,18 @@ function RightContainer({ className }) {
           </div>
 
           {/* Middle Section */}
-          {!code && <div className="middle flex-grow overflow-y-auto ">
-            <MessageContainer />
-          </div>}
-            {code && <CodeEditor />}
+          {!code && (
+            <div className="middle flex-grow overflow-y-auto ">
+              <MessageContainer />
+            </div>
+          )}
+          {code && <CodeEditor isbackButtonShow={false}/>}
           {/* Bottom Section */}
-          {!code && <div className="sticky bottom-0">
-            <SendMessage />
-          </div>}
+          {!code && (
+            <div className="sticky bottom-0">
+              <SendMessage />
+            </div>
+          )}
         </div>
       )}
     </>

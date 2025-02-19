@@ -8,7 +8,7 @@ import { MdOutlineClear } from "react-icons/md";
 import { codeSend } from "../api/messageApi";
 import { setMessages } from "../redux/messageSlices";
 
-const CodeEditor = () => {
+const CodeEditor = ({style,isbackButtonShow = true}) => {
   const dispatch = useDispatch();
   const [codeText, setCodeText] = useState("");
   const { code } = useSelector((store) => store.codes);
@@ -39,14 +39,15 @@ const CodeEditor = () => {
   };
 
   return (
-    <div className="h-full flex flex-col relative">
-      <div className="flex justify-between px-6 py-3 bg-gray-900">
+    <div className= {`h-full flex flex-col relative border-l-0 ${style}`}>
+      <div className="flex justify-between items-center px-6 py-3 bg-gray-900">
         <button
-          className="text-white px-2 rounded bg-gray-700 hover:bg-gray-600"
+      className={`text-white px-2 py-2 rounded bg-gray-700 hover:bg-gray-600  ${isbackButtonShow ? "hidden" : ""}`}
           onClick={handleGoBack}
         >
           <MdOutlineClear className="size-4 text-sm" />
         </button>
+        <div className="text-yellow-500 font-bold">javascript</div>
         <button
           className="bg-green-700 text-white px-4 py-2 text-sm rounded hover:bg-green-600"
           onClick={copyHandler}

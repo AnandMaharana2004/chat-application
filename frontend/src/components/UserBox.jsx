@@ -17,10 +17,11 @@ function UserBox({ user, fromExplore = false, fromAi = false }) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = (e) => {
+    if (fromAi) return;
     e.preventDefault();
     if (!fromExplore && selectedUser?._id !== authUser?._id) {
       dispatch(setSelectedUsers(user));
-      dispatch(setCode(null))
+      dispatch(setCode(null));
     }
   };
 
@@ -41,18 +42,35 @@ function UserBox({ user, fromExplore = false, fromAi = false }) {
     }
   };
 
+  const handleAiClick = (e) => {
+    if(!fromAi) return
+    e.preventDefault();
+    console.log("click ot ai");
+    dispatch(setCode("//how are you miss"))
+    dispatch(setSelectedUsers(null))
+  };
+
   return (
     <div
+      onClick={ handleAiClick}
       className={`flex gap-3 items-center px-2 p-2 rounded-sm ${
-        user?._id === selectedUser?._id ? "bg-zinc-900" : ""
-      }`}
+        !fromAi && user?._id === selectedUser?._id ? "bg-zinc-900" : ""
+      } ${fromAi && "cursor-pointer"}`}
     >
-      <ProfilePic user={user} />
+      {!fromAi && <ProfilePic user={user} />}
+      {fromAi && (
+        <div
+          className="text-white px-2 py-1 rounded text-xl align-middle font-bold bg-yellow-600 
+      "
+        >
+          Js
+        </div>
+      )}
 
       {/* User Info */}
       <div className="flex flex-1 flex-col" onClick={handleClick}>
         <div className="name text-lg font-semibold">
-          {user?.username || "Username"}
+          {user?.username || (fromAi && "javascript")}
         </div>
         {!fromExplore ||
           (fromAi && (
@@ -61,7 +79,7 @@ function UserBox({ user, fromExplore = false, fromAi = false }) {
       </div>
 
       {/* Add Friend Button (Only in Explore) */}
-      {fromExplore && !isFriend && (
+      {fromExplore && !isFriend && !fromAi && (
         <button
           onClick={handleAddToFriend}
           disabled={loading || isFriend}
@@ -76,7 +94,7 @@ function UserBox({ user, fromExplore = false, fromAi = false }) {
             : "Add to Friend"}
         </button>
       )}
-      {fromAi && <button>this is from ai</button>}
+      {/* {fromAi && <button>this is from ai</button>} */}
     </div>
   );
 }
