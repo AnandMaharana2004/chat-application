@@ -7,6 +7,9 @@ import { IoMdSend } from "react-icons/io";
 import { MdOutlineClear } from "react-icons/md";
 import { codeSend } from "../api/messageApi";
 import { setMessages } from "../redux/messageSlices";
+import { analyseCode } from "../api/aiApi";
+import toast from "react-hot-toast";
+import Markdown from "react-markdown";
 
 const CodeEditor = ({
   style,
@@ -21,6 +24,7 @@ const CodeEditor = ({
   const { selectedUser } = useSelector((store) => store.user);
   const { message } = useSelector((store) => store.messages);
   const { loading, fetchData } = useAxiosCall();
+  const [loadingResponse, setLoadingResponse] = useState(false);
 
   const sendCode = async (e) => {
     try {
@@ -43,7 +47,18 @@ const CodeEditor = ({
     setCodeText(code);
     navigator.clipboard.writeText(codeText);
   };
-  const handleAnalyseClick = () => {};
+  const handleAnlyseCode = async () => {
+    try {
+      dispatch(setCode(codeText));
+      setLoadingResponse(true);
+      const response = await analyseCode(codeText);
+      setResponse(response.data);
+      setLoadingResponse(false);
+    } catch (error) {
+      setLoadingResponse(false);
+      return toast.error("someting went wrong while analyse code !!");
+    }
+  };
 
   const handleSeeResult = () => {
     setisResultShow((prev) => !prev);
@@ -95,7 +110,9 @@ const CodeEditor = ({
           />
         )}
         {isResultShow == true && (
-          <div className="bg-[#1e1e1e] text-white h-full">it's result time</div>
+          <div className="bg-[#1e1e1e] text-white h-full">
+            <Markdown>{`${response}`}</Markdown>
+          </div>
         )}
       </div>
 
@@ -112,17 +129,17 @@ const CodeEditor = ({
       )}
       {isResultButton && !isResultShow && (
         <button className="absolute bottom-4 right-4">
-          {!loading && (
+          {
             <button
               className=" mx-2 bg-blue-700 text-white px-4 py-2 text-sm rounded hover:bg-blue-600"
-              onClick={handleSeeResult}
+              onClick={handleAnlyseCode}
             >
-              Analyse
+              {!loadingResponse && "Analyse"}
+              {loadingResponse && (
+                <span className="loading loading-spinner loading-lg mx-auto size-3"></span>
+              )}
             </button>
-          )}
-          {loading && (
-            <span className="loading loading-spinner loading-lg mx-auto size-3"></span>
-          )}
+          }
         </button>
       )}
     </div>

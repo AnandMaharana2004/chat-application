@@ -1,7 +1,7 @@
 import axiosInstance from "../utils/axios.config.js";
 
-const codeSend = async (id,code) => {
-    return axiosInstance.post(`/ai/code-send/${id}`,code);
+const analyseCode = async (prompt) => {
+    return axiosInstance.post(`/ai/analyse-code`,{prompt : prompt});
 }
 
-export {codeSend}
+export {analyseCode}
