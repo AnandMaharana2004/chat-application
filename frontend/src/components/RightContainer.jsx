@@ -50,12 +50,14 @@ function RightContainer({ className }) {
     <>
       {selectedUser == null ? (
         <>
-        {code && <CodeEditor style={"border"}/>}
-        {!code && !selectedUser && <div
-          className={`h-full w-full flex justify-center items-center text-gray-500 text-lg ${className}`}
-        >
-          Let's chat with your friends
-        </div>}
+          {code && <CodeEditor style={"border"} />}
+          {!code && !selectedUser && (
+            <div
+              className={`h-full w-full flex justify-center items-center text-gray-500 text-lg ${className}`}
+            >
+              Let's chat with your friends
+            </div>
+          )}
         </>
       ) : (
         <div
@@ -69,7 +71,7 @@ function RightContainer({ className }) {
                 onClick={handleGoBack}
                 className="text-white px-3 py-3 rounded bg-gray-700 hover:bg-gray-600 lg:hidden"
               >
-                <IoArrowBackSharp className=""/>
+                <IoArrowBackSharp className="" />
               </button>
               <ProfilePic user={selectedUser} />
               <div className="text-sm lg:text-base font-semibold">
@@ -124,7 +126,9 @@ function RightContainer({ className }) {
               <MessageContainer />
             </div>
           )}
-          {code && <CodeEditor isbackButtonShow={false}/>}
+          {code && (
+            <CodeEditor isbackButtonShow={false} isResultButton={false} />
+          )}
           {/* Bottom Section */}
           {!code && (
             <div className="sticky bottom-0">
