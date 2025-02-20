@@ -79,8 +79,12 @@ const model = genAI.getGenerativeModel({
 
 
 const getAiResponse = async (prompt) => {
-    return await model.generateContent(prompt)
-
+    // console.log(prompt);
+    const result = await model.generateContent(prompt);
+    const func = result.response.text
+    const response = func()
+    // console.log(response);
+    return response
 }
 
 
