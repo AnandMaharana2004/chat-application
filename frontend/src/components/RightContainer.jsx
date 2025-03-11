@@ -7,6 +7,7 @@ import { IoArrowBackSharp } from "react-icons/io5";
 import { GoCodeReview } from "react-icons/go";
 import { MdOutlineDeleteOutline, MdPerson, MdFavorite } from "react-icons/md";
 import { BsThreeDotsVertical, BsPersonFillSlash } from "react-icons/bs";
+import { BiVideo } from "react-icons/bi";
 import SendMessage from "./SendMessage";
 import ProfilePic from "./ProfilePic";
 import CodeEditor from "./CodeContainer";
@@ -87,7 +88,8 @@ function RightContainer({ className }) {
                   isFavorate ? "text-red-700" : ""
                 }`}
               />
-              <GoCodeReview className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer" />
+              <BiVideo className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer" />
+
               <div className="relative" ref={dropdownRef}>
                 <BsThreeDotsVertical
                   className="h-5 w-5 lg:h-6 lg:w-6 cursor-pointer"

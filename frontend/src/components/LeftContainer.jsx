@@ -11,6 +11,8 @@ import Explore from "./Explore";
 import ProfilePic from "./ProfilePic";
 import AiContainer from "./AiContainer";
 import { setCode } from "../redux/codeSlice";
+import ProflleCircle from "./ProflleCircle";
+import { setProfile } from "../redux/userSlices";
 
 function LeftContainer({ className }) {
   const dispatch = useDispatch();
@@ -50,7 +52,14 @@ function LeftContainer({ className }) {
     <div className={`flex flex-col h-full w-full relative ${className}`}>
       <div className="flex items-center justify-between px-2 py-2 bg-gray-800 sticky top-0 z-10 shadow-lg">
         <div className="usernameAndProfile flex items-center">
-          <ProfilePic user={user} />
+          {/* <ProfilePic user={user} /> */}
+          <ProflleCircle
+            profilePicUrl={user?.profilePicture}
+            isClickable={true}
+            onClickFunction={() => {
+              dispatch(setProfile(user._id));
+            }}
+          />
           <div className="Username pl-2 text-white">
             Hii 👋,{" "}
             <span className="font-bold">{user?.username || "Guest"}</span>
