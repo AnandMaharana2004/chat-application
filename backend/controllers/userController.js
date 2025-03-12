@@ -439,6 +439,7 @@ const GetProfile = AsyncHandler(async (req, res) => {
         if (!user) throw new ApiError(404, "User not found.")
 
         const userProfile = {
+            id : user._id,
             username: user.username,
             email: user.email,
             gender: user.gender,
@@ -464,6 +465,7 @@ const GetProfile = AsyncHandler(async (req, res) => {
     );
     if (!user) throw new ApiError(404, "User not found !!")
     const userProfile = {
+        id : user._id,
         username: user.username,
         email: user.email,
         gender: user.gender,
