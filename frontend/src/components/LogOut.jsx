@@ -43,7 +43,7 @@ function LogOut() {
       className=" bg-red-500 px-2 py-1 rounded-sm text-white text-md w-full"
       onClick={logoutHandler}
     >
-      {loading ? "Loading..." : "logout"}
+      {loading ? "Loading..." : "Log Out"}
     </button>
   );
 }

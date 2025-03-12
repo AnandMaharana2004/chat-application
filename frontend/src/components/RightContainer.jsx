@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import useGetRealtimeMessages from "../hooks/useGetRealTimeMessages";
 import { setSelectedUsers, setUserFavorateList } from "../redux/userSlices";
 import { IoArrowBackSharp } from "react-icons/io5";
-import { GoCodeReview } from "react-icons/go";
 import { MdOutlineDeleteOutline, MdPerson, MdFavorite } from "react-icons/md";
 import { BsThreeDotsVertical, BsPersonFillSlash } from "react-icons/bs";
 import { BiVideo } from "react-icons/bi";

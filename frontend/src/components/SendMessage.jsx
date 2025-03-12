@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import { sendMediaMessage, sendMessage } from "../api/messageApi";
 import { ImAttachment } from "react-icons/im";
 import { useAxiosCall } from "../hooks/useAxiosCall";
-import { FaLaptopCode } from "react-icons/fa6";
 import { setCode } from "../redux/codeSlice";
 import { FaCode } from "react-icons/fa6";
 
