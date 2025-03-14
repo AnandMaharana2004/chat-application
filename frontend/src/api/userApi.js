@@ -1,7 +1,9 @@
 import axiosInstance from "../utils/axios.config.js";
 
-const updateUserProfile = async (userId, data) => {
-    return axiosInstance.post(`/user/update-profile-pic`, data);
+const updateUserProfile = async (file) => {
+    const formData = new FormData();
+    formData.append("profilepicture", file);
+    return axiosInstance.post(`/user/update-profile-pic`, formData);
 };
 
 const updateBio = async (data) => {

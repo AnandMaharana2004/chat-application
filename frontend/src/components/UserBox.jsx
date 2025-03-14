@@ -43,18 +43,18 @@ function UserBox({ user, fromExplore = false, fromAi = false }) {
   };
 
   const handleAiClick = (e) => {
-    if(!fromAi) return
+    if (!fromAi) return;
     e.preventDefault();
     console.log("click ot ai");
-    dispatch(setCode("//how are you miss"))
-    dispatch(setSelectedUsers(null))
+    dispatch(setCode("//how are you miss"));
+    dispatch(setSelectedUsers(null));
   };
 
   return (
     <div
-      onClick={ handleAiClick}
+      onClick={handleAiClick}
       className={`flex gap-3 items-center px-2 p-2 rounded-sm ${
-        !fromAi && user?._id === selectedUser?._id ? "bg-zinc-900" : ""
+        !fromAi && user?._id === selectedUser?._id ? "bg-[#1d232a]" : ""
       } ${fromAi && "cursor-pointer"}`}
     >
       {!fromAi && <ProfilePic user={user} />}
