@@ -38,7 +38,10 @@ const UpdateProfilePic = AsyncHandler(async (req, res) => {
     if (!newProfilePicPath) throw new ApiError(400, "Profile picture is required.");
 
     const user = await User.findById(userId).select("profilePicture");
-    if (!user) throw new ApiError(404, "User not found.");
+    if (!user) {
+        fs.unlinkSync(newProfilePicPath);
+        throw new ApiError(404, "User not found.");
+    }
 
     const previousProfilePicUrl = user.profilePicture;
 
