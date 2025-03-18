@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"
+const genAIString = "AIzaSyAK4BODOZ-6rV9KwdxQrjsi-EQxrBTQL9M"
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "AIzaSyAK4BODOZ-6rV9KwdxQrjsi-EQxrBTQL9M");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash", systemInstruction: `
     Here's a solid system instruction for your AI code reviewer:
