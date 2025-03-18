@@ -11,7 +11,8 @@ const userSlice = createSlice({
         userBlockList: null,
         userFavorateList: null,
         userFriendList: null,
-        profile: null
+        profile: null,
+        showImage : null,
     },
     reducers: {
         setAuthUser: (state, action) => {
@@ -45,6 +46,12 @@ const userSlice = createSlice({
         },
         setProfile: (state, action) => {
             state.profile = action.payload
+        },
+        setAuthUser_ProfilePicture: (state, action) => {
+            state.authUser.profilePicture = action.payload
+        },
+        setShowImage : (state, action) => {
+            state.showImage = action.payload
         }
     }
 })
@@ -58,6 +65,8 @@ export const {
     setSearchUsers,
     setUserFriendList,
     setProfile,
+    setAuthUser_ProfilePicture,
+    setShowImage
 } = userSlice.actions
 export default userSlice.reducer;
 

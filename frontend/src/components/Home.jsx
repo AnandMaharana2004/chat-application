@@ -5,12 +5,13 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import CodeEditor from "./CodeContainer";
+import ShowPicture from "./ShowPicture";
 
 function Home() {
   const [selectComponent, setSelectComponent] = useState("home");
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
-  const { authUser, selectedUser, profile } = useSelector(
+  const { authUser, selectedUser, profile, showImage } = useSelector(
     (state) => state.user
   );
   const { code} = useSelector(store => store.codes)
@@ -57,6 +58,11 @@ function Home() {
             {profile && (
               <div className="overflow-y-auto max-h-full">
                 <Profile className={"border border-l-0"} />
+              </div>
+            )}
+            {!showImage=== null && (
+              <div className="overflow-y-auto max-h-full">
+                <ShowPicture className={"border border-l-0"} />
               </div>
             )}
           </div>

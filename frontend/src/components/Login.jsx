@@ -27,7 +27,7 @@ function Login() {
   return (
     <div className="flex flex-col items-center justify-center gap-4 h-screen px-4 bg-gray-100">
       <h1 className="text-2xl font-bold text-gray-800 md:text-3xl">
-        Welcome back to Chat More
+        Welcome back to Chat Hub
       </h1>
 
       <form

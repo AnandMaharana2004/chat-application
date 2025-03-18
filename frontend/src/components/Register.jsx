@@ -47,7 +47,7 @@ function Register() {
   return (
     <div className="flex flex-col items-center justify-center gap-4 h-screen px-4 bg-gray-100">
       <h1 className="text-2xl font-bold text-gray-800 md:text-3xl">
-        Welcome to Chat More
+        Welcome to Chat Hub
       </h1>
       <form
         className="flex flex-col gap-4 bg-white shadow-lg rounded-lg p-6 w-full max-w-sm md:max-w-md"

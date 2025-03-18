@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import { MdOutlineClear } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useAxiosCall } from "../hooks/useAxiosCall";
-import { setProfile, setSelectedUsers } from "../redux/userSlices";
+import {
+  setAuthUser_ProfilePicture,
+  setProfile,
+  setSelectedUsers,
+} from "../redux/userSlices";
 import {
   getProfile,
   updateAbout,
@@ -111,7 +115,8 @@ function Profile({ close, className }) {
         setAbout(res.about);
       }
     }
-    if (responseData.bio !== bio) {
+    if (responseData.bio.trim() !== bio.trim()) {
+      console.log("is come here ");
       res = await fetchData(() => updateBio({ bio }));
     }
     if (responseData.profilePicture !== profilePicture) {
@@ -119,17 +124,24 @@ function Profile({ close, className }) {
       try {
         res = {};
         res = await fetchData(() => updateUserProfile(file));
-        clg(res);
+        console.log("res is : ", res);
         setProfilePicture(res.profilePicture);
+        dispatch(setAuthUser_ProfilePicture(res.profilePicture));
+        return toast.success("Profile picture updated successfully");
       } catch (error) {
         res = {};
+        console.log("error is : ", error);
         toast.error(
-          error.response.data.message || "Fail to upload profile picture"
+          error?.response.data.message || "Fail to upload profile picture"
         );
         // console.log("error is : ", error.response.data.message);
       }
     }
   };
+
+  const handleShowProfile = (e)=>{
+    console.log("click to show profile");
+  }
 
   const handleChatClick = (e) => {
     e.preventDefault();
@@ -194,7 +206,7 @@ function Profile({ close, className }) {
                   <BiVideo className="text-green-800 text-3xl font-extrabold " />
                   video call
                 </div>
-                <div className="flex flex-col items-center cursor-pointer">
+                <div className="flex flex-col items-center cursor-pointer" onClick={handleShowProfile}>
                   <MdFavorite className="text-red-500 text-3xl font-extrabold" />
                   Favorate
                 </div>
@@ -257,7 +269,7 @@ function Profile({ close, className }) {
           <div className="bg-[#1d232a] p-1 my-1 rounded">
             <h1>Medias </h1>
             <div className="h-40 flex justify-center items-center">
-              No Media{" "}
+              No Media
             </div>
           </div>
         )}
