@@ -12,6 +12,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "backend": "file:..",
     "dotenv": "^16.4.7",
     "js-beautify": "^1.15.3",
     "js-cookie": "^3.0.5",

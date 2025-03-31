@@ -24,10 +24,12 @@
 import axios from "axios";
 import Cookies from "js-cookie"; // Use a library like js-cookie to handle cookies easily
 
-const baseURL = import.meta.env.VITE_BACKEND_BASEURL || "http://localhost:3000/Chat-app/api/v1";
+import { VITE_BACKEND_BASEURL } from "../../constant.js";
+
+const baseURL =  "http://localhost:3000/Chat-app/api/v1";
 
 const axiosInstance = axios.create({
-  baseURL: baseURL,
+  baseURL: VITE_BACKEND_BASEURL,
   withCredentials: true, // Ensures cookies are sent with requests
   // headers: {
   //   "Content-Type": "application/json",
@@ -63,7 +65,7 @@ axiosInstance.interceptors.response.use(
       try {
         // Attempt to refresh the token
         const response = await axios.post(
-          `${baseURL}/auth/refresh-token`,
+          `${VITE_BACKEND_BASEURL}/auth/refresh-token`,
           {}, // No need to send the refresh token in the body
           { withCredentials: true } // Ensure cookies are sent with the request
         );

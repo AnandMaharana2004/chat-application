@@ -10,11 +10,12 @@ import { BiVideo } from "react-icons/bi";
 import SendMessage from "./SendMessage";
 import ProfilePic from "./ProfilePic";
 import CodeEditor from "./CodeContainer";
+import ShowImagePopup from "./ShowImagePopup";
 
 function RightContainer({ className }) {
   useGetRealtimeMessages();
   const dispatch = useDispatch();
-  const { authUser, selectedUser } = useSelector((state) => state.user);
+  const { authUser, selectedUser, selectedImage } = useSelector((state) => state.user);
   const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { code } = useSelector((store) => store.codes);
@@ -61,7 +62,7 @@ function RightContainer({ className }) {
         </>
       ) : (
         <div
-          className={`h-full w-full flex flex-col justify-between px-2 py-3 relative ${className}`}
+          className={`h-full w-full flex flex-col justify-between px-3 py-3 relative ${className}`}
         >
           {/* Top Section */}
           <div className="flex items-center justify-between sticky top-0 p-2 z-10  bg-gray-800 text-white shadow-md">
@@ -122,7 +123,7 @@ function RightContainer({ className }) {
           </div>
 
           {/* Middle Section */}
-          {!code && (
+          {!code && !selectedImage && (
             <div className="middle flex-grow overflow-y-auto ">
               <MessageContainer />
             </div>
@@ -130,8 +131,11 @@ function RightContainer({ className }) {
           {code && (
             <CodeEditor isbackButtonShow={false} isResultButton={false} />
           )}
+          {
+            selectedImage && <ShowImagePopup />
+          }
           {/* Bottom Section */}
-          {!code && (
+          {!code && !selectedImage &&(
             <div className="sticky bottom-0">
               <SendMessage />
             </div>

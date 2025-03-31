@@ -13,16 +13,16 @@ import { fileURLToPath } from 'url'
 
 const port = process.env.PORT || 3030
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.resolve()
 
 
 // middlewares 
 app.use(json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static(path.join(__dirname, "public")))
 app.use(cors({
+    // origin: `http://localhost:3000`,
     origin: `http://localhost:5173`,
     credentials: true
 }))
@@ -30,6 +30,13 @@ app.use(cors({
 // routes
 
 route(app)
+
+// expose the frontend
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
+// serve the frontend
+app.get('*', (_, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+})
 
 
 server.listen(port, () => {

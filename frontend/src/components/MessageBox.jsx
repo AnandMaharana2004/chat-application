@@ -12,6 +12,7 @@ import {
 import { removeMessage, replaceMessage } from "../redux/messageSlices";
 import { IoBanOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
+import { setSelectedImage } from "../redux/userSlices";
 
 function useOutsideClick(ref, callback) {
   const handleClick = useCallback(
@@ -113,6 +114,12 @@ function MessageBox({ message }) {
 
   const handleUpdateMessage = () => {};
 
+  const handleShowImage = (e)=>{
+    const imageUrl = message.media[0].url
+    dispatch(setSelectedImage(imageUrl))
+    // if this is an image then show view other wise not
+  }
+
   return (
     <div
       className={`relative chat ${
@@ -198,6 +205,11 @@ function MessageBox({ message }) {
                   <button onClick={handleUpdateMessage}>update message</button>
                 </li>
               )}
+            {message.media.length >0 && <li className="hover:bg-gray-100 px-2 flex items-center gap-2 cursor-pointer" onClick={handleShowImage}>
+              <button >
+                view
+              </button>
+            </li>}
           </ul>
         </div>
       )}
